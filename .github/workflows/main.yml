@@ -1,0 +1,61 @@
+Yes, I was able to figure this out today.
+
+First, you need to go through this tutorial on AWS to set up your EC2 server, as well as configure the Application and Deployment Group in CodeDeploy: Tutorial: Use CodeDeploy to deploy an application from GitHub
+
+Then, you can use the following workflow in GitHub Actions to deploy your code on push. You essentially use the AWS CLI to create a new deployment. Store the AWS credentials for the CLI in GitHub Secrets.
+
+Here is an example for deploying a Node app:
+
+name: Deploy to AWS
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    name: Deploy AWS
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+        app-name: ['ri']
+        deployment-group: ['ra']
+        repo: ['raghvendran966/sample_node']
+        
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+          
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Build app
+        run: npm run build
+
+      - name: Install AWS CLI 
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install --update
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+          
+      - name: Deploy to AWS
+        run: |
+          aws deploy create-deployment \
+          --application-name ${{ matrix.app-name }} \
+          --deployment-config-name CodeDeployDefault.OneAtATime \
+          --deployment-group-name ${{ matrix.deployment-group }} \
+          --description "GitHub Deployment for the ${{ matrix.app-name }}-${{ github.sha }}" \
+          --github-location repository=${{ matrix.repo }},commitId=${{ github.sha }}
