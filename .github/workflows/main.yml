@@ -33,5 +33,4 @@ jobs:
           branch: production-build
           force: true
 
-      - name: Setup Deployment with PM2
-        run: yarn deploy-setup
+      
