@@ -8,12 +8,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install Dependencies
-        run: yarn prepare:install
-
-      - name: Build
-        run: yarn prepare:build
-
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh/
