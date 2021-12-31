@@ -13,8 +13,6 @@ jobs:
         node-version: '10.x'
     - name: Install npm dependencies
       run: npm install
-    - name: Run tests
-      run: npm run test
 
   staging-deploy:
     runs-on: ubuntu-latest
@@ -33,7 +31,7 @@ jobs:
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: "us-east-2"
+        AWS_DEFAULT_REGION: "us-east-1"
       with:
         args: >-
           deploy push
