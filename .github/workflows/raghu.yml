@@ -13,7 +13,6 @@ jobs:
         node-version: '10.x'
     - name: Install npm dependencies
       run: npm install
-      run: npm run build
 
   staging-deploy:
     runs-on: ubuntu-latest
