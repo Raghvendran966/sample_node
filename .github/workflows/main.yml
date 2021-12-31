@@ -11,10 +11,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install Dependencies
-        run: npm run install
+        run: yarn prepare:install
 
       - name: Build
-        run: npm build
+        run: yarn prepare:build
 
       - name: Set up SSH
         run: |
